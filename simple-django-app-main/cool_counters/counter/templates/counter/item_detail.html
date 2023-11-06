@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Style for the navigation bar */
+        .topnav {
+            overflow: hidden;
+        }
+
+        /* Style for the navigation bar links */
+        .topnav a {
+            float: left; /* Float the links to the left */
+            display: block; /* Display them as block elements */
+            color: white; /* Text color for the links */
+            text-align: center; /* Center-align the text */
+            padding: 14px 16px; /* Padding around the links */
+            text-decoration: none; /* Remove underlines from links */
+        }
+
+        /* Style for the search bar */
+        .search-bar {
+            margin-left: 100px; /* Float the search bar to the left */
+        }
+
+        /* Style for the bell icon */
+        .bell-icon {
+            float: right; /* Float the bell icon to the right */
+        }
+
+        /* Add style for the YouTube logo (you can replace 'your-youtube-logo.png' with your logo's path) */
+        .youtube-logo {
+            float: left;
+            margin-top: 10px;
+            margin-left: 10px;
+        }
+        
+    </style>
+    <title>Video Detail</title>
+</head>
+<body>
+    <div class="topnav">
+        <img class="youtube-logo" src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" alt="YouTube Logo" style="height: 40px;width: 60px;margin-top: 0px;margin-left: 0px;margin-right: 200px;">
+        <input class="search-bar" type="text" placeholder="Search..." style="width: 300px;">
+        <button class="search-button" type="submit">Search</button>
+        <img  class="bell-icon"  src="https://cdn2.iconfinder.com/data/icons/lucid-generic/24/User_person_avtar_profile_picture_dp-1024.png" alt="Bell Icon" style="height: 40px;width: 40px;margin-top: 0px;margin-left: 200px;" >
+        <img  class="bell-icon"  src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-1024.png" alt="Bell Icon" style="height: 40px;width: 40px;margin-top: 0px;margin-left: 200px;" >
+    </div>
+    <h1>Video Detail</h1>
+    <p>Name: {{ counter.name }}</p>
+    <p>Description: {{ counter.description }}</p>
+    <a href="{% url 'list' %}">Back to Video List</a><br>
+    <a href="{% url 'home' %}">Back to Home Page</a>
+</body>
+</html>
