@@ -123,4 +123,7 @@ STATIC_URL = '/static/'
 
 
 
+# settings.py
+
+
 

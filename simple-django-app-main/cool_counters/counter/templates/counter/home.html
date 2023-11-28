@@ -1,9 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        /* Your existing styles for the navigation bar */
+        .topnav {
+            overflow: hidden;
+        }
+
+        .topnav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        .search-bar {
+            margin-left: 100px;
+        }
+
+        .bell-icon {
+            float: right;
+        }
+
+        .youtube-logo {
+            float: left;
+            margin-top: 10px;
+            margin-left: 10px;
+        }
+
+        /* Additional styles for the translation form */
+        .translation-form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 5px;
+        }
+
+        select {
+            padding: 5px;
+        }
+
+        button {
+            padding: 8px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
     <title>Home Page</title>
 </head>
 <body>
+    <div class="topnav">
+        <img class="youtube-logo"
+            src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg"
+            alt="YouTube Logo" style="height: 40px;width: 60px;margin-top: 0px;margin-left: 0px;margin-right: 200px;">
+        <input class="search-bar" type="text" placeholder="Search..." style="width: 300px;">
+        <button class="search-button" type="submit">Search</button>
+        <img class="bell-icon"
+            src="https://cdn2.iconfinder.com/data/icons/lucid-generic/24/User_person_avtar_profile_picture_dp-1024.png"
+            alt="Bell Icon" style="height: 40px;width: 40px;margin-top: 0px;margin-left: 200px;">
+        <img class="bell-icon" src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-1024.png"
+            alt="Bell Icon" style="height: 40px;width: 40px;margin-top: 0px;margin-left: 200px;">
+    </div>
+
     <h1>Welcome to the "Spoken English" Learning Tool</h1>
     <p>Addressing the Challenge of Using YouTube to Improve Students' Speaking Skills</p>
     
@@ -29,6 +97,63 @@
 
     <p>In summary, addressing the challenge of using YouTube as a learning tool to improve students' speaking skills is crucial for enhancing educational outcomes, reducing inequalities, and ensuring that all students have access to the tools they need for success in the digital age.</p>
     
+
+    <!-- New Translation Form -->
+<h2>Language Translation</h2>
+<form id="translation-form">
+    {% csrf_token %}
+    <label for="text">Text to Translate:</label>
+    <input type="text" name="text" required>
+    
+    <label for="target_language">Target Language:</label>
+    <select name="target_language">
+        <option value="en">English</option>
+        <option value="es">Spanish</option>
+        <option value="fr">French</option>
+        <!-- Add more language options as needed -->
+    </select>
+
+    <!-- Use 'button' type to prevent form submission -->
+    <button type="button" onclick="translateText()">Translate</button>
+</form>
+
+<div id="translation-result"></div>
+
+
+<!-- Script for handling translation -->
+<script>
+    function translateText() {
+        var text = document.getElementById('translation-form').elements['text'].value;
+        var targetLanguage = document.getElementById('translation-form').elements['target_language'].value;
+
+        // Get the CSRF token
+        var csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+
+        // Perform AJAX request to translate_text view
+        $.ajax({
+            type: 'POST',
+            url: '/translate_text/',  // Update this URL according to your Django project
+            data: {
+                'text': text,
+                'target_language': targetLanguage,
+                'csrfmiddlewaretoken': csrfToken,  // Include the CSRF token
+            },
+            success: function (data) {
+                console.log('Translation response:', data);  // Log the entire response
+
+                if (data.translated_text) {
+                    document.getElementById('translation-result').innerHTML = 'Translation: ' + data.translated_text;
+                } else {
+                    console.error('Translation result is undefined.');
+                }
+            },
+            error: function (error) {
+                console.error('Translation request failed:', error);
+            }
+        });
+    }
+</script>
+
     <a href="{% url 'list' %}">Video List</a><br>
     <a href="{% url 'chatbot' %}">Chat with the Chatbot</a>
 

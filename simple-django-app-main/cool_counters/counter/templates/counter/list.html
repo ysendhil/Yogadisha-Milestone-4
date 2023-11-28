@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Item List</title>
     <style>
@@ -10,22 +11,30 @@
 
         /* Style for the navigation bar links */
         .topnav a {
-            float: left; /* Float the links to the left */
-            display: block; /* Display them as block elements */
-            color: white; /* Text color for the links */
-            text-align: center; /* Center-align the text */
-            padding: 14px 16px; /* Padding around the links */
-            text-decoration: none; /* Remove underlines from links */
+            float: left;
+            /* Float the links to the left */
+            display: block;
+            /* Display them as block elements */
+            color: white;
+            /* Text color for the links */
+            text-align: center;
+            /* Center-align the text */
+            padding: 14px 16px;
+            /* Padding around the links */
+            text-decoration: none;
+            /* Remove underlines from links */
         }
 
         /* Style for the search bar */
         .search-bar {
-            margin-left: 100px; /* Float the search bar to the left */
+            margin-left: 100px;
+            /* Float the search bar to the left */
         }
 
         /* Style for the bell icon */
         .bell-icon {
-            float: right; /* Float the bell icon to the right */
+            float: right;
+            /* Float the bell icon to the right */
         }
 
         /* Add style for the YouTube logo (you can replace 'your-youtube-logo.png' with your logo's path) */
@@ -34,30 +43,105 @@
             margin-top: 10px;
             margin-left: 10px;
         }
-        
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
+
 <body>
     <div class="topnav">
-        <img class="youtube-logo" src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" alt="YouTube Logo" style="height: 40px;width: 60px;margin-top: 0px;margin-left: 0px;margin-right: 200px;">
+        <img class="youtube-logo"
+            src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg"
+            alt="YouTube Logo" style="height: 40px;width: 60px;margin-top: 0px;margin-left: 0px;margin-right: 200px;">
         <input class="search-bar" type="text" placeholder="Search..." style="width: 300px;">
         <button class="search-button" type="submit">Search</button>
-        <img  class="bell-icon"  src="https://cdn2.iconfinder.com/data/icons/lucid-generic/24/User_person_avtar_profile_picture_dp-1024.png" alt="Bell Icon" style="height: 40px;width: 40px;margin-top: 0px;margin-left: 200px;" >
-        <img  class="bell-icon"  src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-1024.png" alt="Bell Icon" style="height: 40px;width: 40px;margin-top: 0px;margin-left: 200px;" >
+        <img class="bell-icon"
+            src="https://cdn2.iconfinder.com/data/icons/lucid-generic/24/User_person_avtar_profile_picture_dp-1024.png"
+            alt="Bell Icon" style="height: 40px;width: 40px;margin-top: 0px;margin-left: 200px;">
+        <img class="bell-icon" src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-1024.png"
+            alt="Bell Icon" style="height: 40px;width: 40px;margin-top: 0px;margin-left: 200px;">
     </div>
+
+    
 
     <h1>Video List</h1>
     <ul>
         {% for item in items %}
-            <li>{{ item.name }} - {{ item.description }}
+        <li>
+            {{ item.name }} - {{ item.description }} - Votes: {{ item.votes }} - Comments: {{ item.comments }}
+            <button class="vote-btn" data-item-id="{{ item.id }}">Vote</button>
             <a href="{% url 'item_detail' item.id %}">View</a> |
             <a href="{% url 'edit_item' item.id %}">Edit</a>
-            </li>
+    
+            <!-- Comment section -->
+            <div>
+                <h3>Comments:</h3>
+                <ul class="comment-list" id="comment-list-{{ item.id }}">
+                    {% for comment in item.comments.all %}
+                    <li>{{ comment.text }}</li>
+                    {% endfor %}
+                </ul>
+    
+                <!-- Comment Form -->
+                <form class="comment-form">
+                    {% csrf_token %}
+                    <input type="text" name="comment-text" placeholder="Enter your comment">
+                    <button type="button" class="comment-btn" data-item-id="{{ item.id }}">Comment</button>
+                </form>
+            </div>
+        </li>
         {% empty %}
-            <li>No items available.</li>
+        <li>No items available.</li>
         {% endfor %}
     </ul>
-    <a href="{% url 'add_item' %}">Add Item</a><br>
-    <a href="{% url 'home' %}">Back to Home Page</a>
+
+<!-- Script for handling real-time vote and comment updates -->
+<script>
+    $(document).ready(function () {
+        $('.vote-btn').click(function () {
+            var itemId = $(this).data('item-id');
+            $.ajax({
+                type: 'POST',
+                url: '/update_votes/',  // Update this URL according to your Django project
+                data: { 'item_id': itemId },
+                success: function (data) {
+                    // Update the vote count dynamically
+                    // Assume your model has a 'votes' field
+                    alert('Vote successful! Updated Votes: ' + data.votes);
+                },
+                error: function (error) {
+                    console.error('Vote request failed:', error);
+                }
+            });
+        });
+
+        $('.comment-btn').click(function () {
+            var itemId = $(this).data('item-id');
+            var commentText = $(this).closest('.comment-form').find('input[name="comment-text"]').val();
+            
+            $.ajax({
+                type: 'POST',
+                url: '/add_comment/',  // Update this URL according to your Django project
+                data: {
+                    'item_id': itemId,
+                    'comment_text': commentText,
+                },
+                success: function (data) {
+                    // Update the comment section dynamically
+                    // Assume your model has a 'comments' field
+                    var commentList = $('#comment-list-' + itemId);
+                    commentList.append('<li>' + data.comment_text + '</li>');
+                    alert('Comment added successfully: ' + commentText);
+                },
+                error: function (error) {
+                    console.error('Comment request failed:', error);
+                }
+            });
+        });
+    });
+</script>
+
+<a href="{% url 'add_item' %}">Add Item</a><br>
+<a href="{% url 'home' %}">Back to Home Page</a>
 </body>
+
 </html>
